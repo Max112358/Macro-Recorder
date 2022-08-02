@@ -27,10 +27,25 @@ global mostRecentActionTime
 ;**                                             **
 ;**   F4 Start or Stop Recording                **
 ;**   F8 Start or Stop Playback (loop forever)  **
-;**   F9 Add 1 Loop    (stackable)              **
-;**   F10 Add 10 Loops (stackable)              **
 ;**                                             **
 ;*************************************************
+
+
+
+;*********NON-INFINITE LOOPS********************************
+;**                                                       **
+;**   Any of these will start playback and add loops      **
+;**   Hit F8 to stop playback and clear remaining loops   **
+;**   Example: F10 twice will loop 20 times then stop     **
+;**                                                       **
+;**   F9 Add 1 Loop                                       **
+;**   F10 Add 10 Loops                                    **
+;**   F11 Add 100 Loops                                   **
+;**   F12 Add 1000 Loops                                  **
+;**                                                       **
+;***********************************************************
+
+
 
 ;*******ADVANCED CONTROLS********************************
 ;**                                                    **
@@ -91,17 +106,25 @@ F8:: ; F8 to start or stop playback
 	
 return
 
-F9:: ; F9 to do one loop
+F9:: ; F9 to add one loop
 	loopsRemaining += 1
 	StartLoop()
 return
 
-F10:: ; F10 to do 10 loop
+F10:: ; F10 to add 10 loops
 	loopsRemaining += 10
 	StartLoop()
 return
 
+F11:: ; F11 to add 100 loops
+	loopsRemaining += 100
+	StartLoop()
+return
 
+F12:: ; F12 to add 1000 loops
+	loopsRemaining += 1000
+	StartLoop()
+return
 
 StartLoop(){
 
