@@ -23,7 +23,7 @@ global loopsRemaining := 0
 global mostRecentActionTime
 
 
-;*************************************************
+;*********BASIC CONTROLS**************************
 ;**                                             **
 ;**   F4 Start or Stop Recording                **
 ;**   F8 Start or Stop Playback (loop forever)  **
@@ -32,7 +32,14 @@ global mostRecentActionTime
 ;**                                             **
 ;*************************************************
 
-
+;*******ADVANCED CONTROLS********************************
+;**                                                    **
+;**   windows+r to reload script                       **
+;**   windows+q to quit                                **
+;**   Press windows+P to pause/unpause                 **
+;**   F3 while recording to move mouse only (no click) **
+;**                                                    **
+;********************************************************
 
 
 #r::Reload ; windows+r to reload script
@@ -62,7 +69,9 @@ F4:: ; F4 to start or stop recording
 		timingList[1] := (elapsedtime) ; set the first timing to the stop record button, to make loops smoother
 	}
 	
-Return
+return
+
+
 
 
 F8:: ; F8 to start or stop playback
@@ -80,17 +89,17 @@ F8:: ; F8 to start or stop playback
 	EndLoop()
 	}
 	
-Return
+return
 
 F9:: ; F9 to do one loop
 	loopsRemaining += 1
 	StartLoop()
-Return
+return
 
 F10:: ; F10 to do 10 loop
 	loopsRemaining += 10
 	StartLoop()
-Return
+return
 
 
 
@@ -164,13 +173,20 @@ LoopThroughList() {
 	EndLoop()
 }
 
+
+
+; hover recording, to move mouse to a position without clicking
+F3::  
+RecordKeystroke("Hover", A_ThisHotkey)
+return
+
 ; mouse recording
 ~LButton::  
 ~RButton::  
 ~WheelUp::
 ~WheelDown:: 
 RecordKeystroke("Mouse", A_ThisHotkey)
-Return
+return
 
 ; The keyboard. I couldn't find a more elegant way to do this.
 ~a::
@@ -218,18 +234,47 @@ Return
 ~]:: 
 ~\::  
 ~-:: 
-~=::  
+~=:: 
+~`::   
 ~enter::
 ~backspace::
 ~up::
 ~down:: 
 ~left:: 
-~right::   
+~right::
+~Escape::
+~Tab::
+~Space::
+~CapsLock::
+~ScrollLock::
+~Delete::
+~Insert::
+~Home::
+~End::
+~PgUp::
+~PgDn::
+~Numpad0::
+~Numpad1::
+~Numpad2::
+~Numpad3::
+~Numpad4::
+~Numpad5::
+~Numpad6::
+~Numpad7::
+~Numpad8::
+~Numpad9::
+~NumpadDot::
+~NumLock::
+~NumpadDiv::
+~NumpadMult::
+~NumpadAdd::
+~NumpadSub::
+~NumpadEnter::
 ~XButton1:: ; even though this is a mouse key, you have to use Send to use it so im placing it here
 ~XButton2:: 
 ~MButton::    
 RecordKeystroke("Key", A_ThisHotkey)
-Return
+return
 
 
 
