@@ -176,7 +176,7 @@ LoopThroughList() {
 			
 			
 			MouseMove, %xposRecording%, %yposRecording% ; always move the mouse
-			sleep, 1 ; some programs need a bit of "hover" to register an interaction
+			sleep, 10 ; some programs need a bit of "hover" to register an interaction
 			
 			if(clickType = "Mouse"){
 			Click, %xposRecording% %yposRecording% %characterRecordingModified%
