@@ -51,7 +51,7 @@ global mostRecentActionTime
 ;**                                                    **
 ;**   windows+r to reload script                       **
 ;**   windows+q to quit                                **
-;**   Press windows+P to pause/unpause                 **
+;**   windows+p to pause/unpause                       **
 ;**   F3 while recording to move mouse only (no click) **
 ;**                                                    **
 ;********************************************************
