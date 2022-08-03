@@ -178,8 +178,12 @@ LoopThroughList() {
 			MouseMove, %xposRecording%, %yposRecording% ; always move the mouse
 			sleep, 10 ; some programs need a bit of "hover" to register an interaction
 			
-			if(clickType = "Mouse"){
-			Click, %xposRecording% %yposRecording% %characterRecordingModified%
+			if(clickType = "MouseDown"){
+			Click, %xposRecording% %yposRecording% Down %characterRecordingModified%
+			}
+			
+			if(clickType = "MouseUp"){
+			Click, %xposRecording% %yposRecording% Up %characterRecordingModified%
 			}
 			
 			if(clickType = "Key"){
@@ -198,17 +202,25 @@ LoopThroughList() {
 
 
 
+
+
+
+
 ; hover recording, to move mouse to a position without clicking
 F3::  
 RecordKeystroke("Hover", A_ThisHotkey)
 return
 
-; mouse recording
+; mouse recording for holding down the mouse. This helps with drag and drop.
 ~LButton::  
 ~RButton::  
-~WheelUp::
-~WheelDown:: 
-RecordKeystroke("Mouse", A_ThisHotkey)
+RecordKeystroke("MouseDown", A_ThisHotkey)
+return
+
+; mouse recording for the release of the mouse
+~LButton Up::  
+~RButton Up::  
+RecordKeystroke("MouseUp", A_ThisHotkey)
 return
 
 ; The keyboard. I couldn't find a more elegant way to do this.
@@ -296,6 +308,8 @@ return
 ~XButton1:: ; even though this is a mouse key, you have to use Send to use it so im placing it here
 ~XButton2:: 
 ~MButton::    
+~WheelUp::
+~WheelDown:: 
 RecordKeystroke("Key", A_ThisHotkey)
 return
 
