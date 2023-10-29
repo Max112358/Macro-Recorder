@@ -23,38 +23,17 @@ global loopsRemaining := 0
 global mostRecentActionTime
 
 
-;*********BASIC CONTROLS**************************
+;*************************************************
 ;**                                             **
 ;**   F4 Start or Stop Recording                **
 ;**   F8 Start or Stop Playback (loop forever)  **
+;**   F9 Add 1 Loop    (stackable)              **
+;**   F10 Add 10 Loops (stackable)              **
+;**   F12 Export Script                         **
 ;**                                             **
 ;*************************************************
 
 
-
-;*********NON-INFINITE LOOPS********************************
-;**                                                       **
-;**   Any of these will start playback and add loops      **
-;**   Hit F8 to stop playback and clear remaining loops   **
-;**   Example: F10 twice will loop 20 times then stop     **
-;**                                                       **
-;**   F9 Add 1 Loop                                       **
-;**   F10 Add 10 Loops                                    **
-;**   F11 Add 100 Loops                                   **
-;**   F12 Add 1000 Loops                                  **
-;**                                                       **
-;***********************************************************
-
-
-
-;*******ADVANCED CONTROLS********************************
-;**                                                    **
-;**   windows+r to reload script                       **
-;**   windows+q to quit                                **
-;**   windows+p to pause/unpause                       **
-;**   F3 while recording to move mouse only (no click) **
-;**                                                    **
-;********************************************************
 
 
 #r::Reload ; windows+r to reload script
@@ -64,70 +43,64 @@ global mostRecentActionTime
 #p::Pause  ; Press windows+P to pause. Press it again to resume.
 
 F4:: ; F4 to start or stop recording
-	
-	isRecording := !isRecording
-	isPlayingBack := false
-	
-	if (isRecording)
-	{
-		SoundPlay *-1 ; A beep to confirm program is active
-		mostRecentActionTime := A_TickCount
-		
-		; erase the arrays
-		keystrokeList := []
-		mouseXList := []
-		mouseYList := []
-		timingList := []
-		characterList := []
-	}else{
-		elapsedtime := A_TickCount - mostRecentActionTime
-		timingList[1] := (elapsedtime) ; set the first timing to the stop record button, to make loops smoother
-	}
-	
-return
 
+isRecording := !isRecording
+isPlayingBack := false
 
+if (isRecording)
+{
+	SoundPlay *-1 ; A beep to confirm program is active
+	mostRecentActionTime := A_TickCount
+	
+	; erase the arrays
+	keystrokeList := []
+	mouseXList := []
+	mouseYList := []
+	timingList := []
+	characterList := []
+}else{
+	elapsedtime := A_TickCount - mostRecentActionTime
+	timingList[1] := (elapsedtime) ; set the first timing to the stop record button, to make loops smoother
+}
+
+Return
 
 
 F8:: ; F8 to start or stop playback
 
-	if(loopsRemaining = 0){
+if(loopsRemaining = 0){
 	loopsRemaining = 100000000000000
-	}
-	
-	isRecording := false
-	isPlayingBack := !isPlayingBack
-	
-	if(isPlayingBack = true){
+}
+
+isRecording := false
+isPlayingBack := !isPlayingBack
+
+if(isPlayingBack = true){
 	StartLoop()
-	}else{
+}else{
 	EndLoop()
-	}
-	
-return
+}
 
-F9:: ; F9 to add one loop
-	loopsRemaining += 1
-	StartLoop()
-return
+Return
 
-F10:: ; F10 to add 10 loops
-	loopsRemaining += 10
-	StartLoop()
-return
+F9:: ; F9 to do one loop
+loopsRemaining += 1
+StartLoop()
+Return
 
-F11:: ; F11 to add 100 loops
-	loopsRemaining += 100
-	StartLoop()
-return
+F10:: ; F10 to do 10 loops
+loopsRemaining += 10
+StartLoop()
+Return
 
-F12:: ; F12 to add 1000 loops
-	loopsRemaining += 1000
-	StartLoop()
-return
+F12:: ; F12 to export
+ExportMacro()
+Return
+
+
 
 StartLoop(){
-
+	
 	isRecording := false
 	isPlayingBack := true
 	SetTimer, MoveToAnotherThread, 1
@@ -135,27 +108,27 @@ StartLoop(){
 }
 
 EndLoop(){
-
+	
 	isRecording := false
 	isPlayingBack := false
 	loopsRemaining = 0
 	SetTimer, MoveToAnotherThread, Off
-
+	
 }
 
 
 
 MoveToAnotherThread:
-	LoopThroughList()
+LoopThroughList()
 return
 
 LoopThroughList() {
-
+	
 	outer:
 	while (loopsRemaining > 0)
-    {
-			
-			
+	{
+		
+		
 		for index, element in keystrokeList ; Enumeration is the recommended approach in most cases.
 		{
 			
@@ -169,25 +142,40 @@ LoopThroughList() {
 			sleep, %timingRecording% ; (wait for correct amount of time) 
 			
 			if(isPlayingBack = false){
-			break outer
+				break outer
 			}
 			
 			; MsgBox, % characterRecordingModified ; useful for debugging
 			
-			
 			MouseMove, %xposRecording%, %yposRecording% ; always move the mouse
-			sleep, 10 ; some programs need a bit of "hover" to register an interaction
+			sleep, 1 ; some programs need a bit of "hover" to register an interaction
 			
-			if(clickType = "MouseDown"){
-			Click, %xposRecording% %yposRecording% Down %characterRecordingModified%
-			}
-			
-			if(clickType = "MouseUp"){
-			Click, %xposRecording% %yposRecording% Up %characterRecordingModified%
+			if(clickType = "Mouse"){
+				
+				if(characterRecordingModified == "LButton Up"){
+					Click Up Left 
+				}
+				
+				else if(characterRecordingModified == "LButton"){
+					Click Down Left 
+				}
+				
+				else if(characterRecordingModified == "Rbutton Up"){
+					Click Up Right 
+				}
+				
+				else if(characterRecordingModified == "Rbutton"){
+					Click Down Right 
+				}
+				else{
+					Click %characterRecordingModified%
+				}
+				
+				
 			}
 			
 			if(clickType = "Key"){
-			
+				
 				if(StrLen(characterRecordingModified) > 1){
 					Send, {%characterRecordingModified%}
 				}else{
@@ -200,28 +188,15 @@ LoopThroughList() {
 	EndLoop()
 }
 
-
-
-
-
-
-
-; hover recording, to move mouse to a position without clicking
-F3::  
-RecordKeystroke("Hover", A_ThisHotkey)
-return
-
-; mouse recording for holding down the mouse. This helps with drag and drop.
+; mouse recording
 ~LButton::  
+~LButton Up::
 ~RButton::  
-RecordKeystroke("MouseDown", A_ThisHotkey)
-return
-
-; mouse recording for the release of the mouse
-~LButton Up::  
-~RButton Up::  
-RecordKeystroke("MouseUp", A_ThisHotkey)
-return
+~RButton Up::
+~WheelUp::
+~WheelDown:: 
+RecordKeystroke("Mouse", A_ThisHotkey)
+Return
 
 ; The keyboard. I couldn't find a more elegant way to do this.
 ~a::
@@ -267,10 +242,10 @@ return
 ~':: 
 ~[:: 
 ~]:: 
-~\::  
+~\:: 
 ~-:: 
+~`:: 
 ~=:: 
-~`::   
 ~enter::
 ~backspace::
 ~up::
@@ -308,32 +283,149 @@ return
 ~XButton1:: ; even though this is a mouse key, you have to use Send to use it so im placing it here
 ~XButton2:: 
 ~MButton::    
-~WheelUp::
-~WheelDown:: 
 RecordKeystroke("Key", A_ThisHotkey)
-return
-
-
+Return
 
 
 ; the function that actually records everything
 RecordKeystroke(Keystroke, Character) {
-
-SetMouseDelay, 0
-SetKeyDelay, 0
-
-if (isRecording){
-SoundPlay *-1 
-keystrokeList.Push(Keystroke) ; add keystroke to list
-characterList.Push(Character) ; add keystroke to list
-
-MouseGetPos, xpos, ypos 
-mouseXList.Push(xpos) ; add position to list
-mouseYList.Push(ypos) ; add position to list
-
-elapsedtime := A_TickCount - mostRecentActionTime
-timingList.Push(elapsedtime) ; add timing to list
-mostRecentActionTime := A_TickCount 
-
+	
+	SetMouseDelay, 0
+	SetKeyDelay, 0
+	
+	if (isRecording){
+		SoundPlay *-1 
+		keystrokeList.Push(Keystroke) ; add keystroke to list
+		characterList.Push(Character) ; add keystroke to list
+		
+		MouseGetPos, xpos, ypos 
+		mouseXList.Push(xpos) ; add position to list
+		mouseYList.Push(ypos) ; add position to list
+		
+		elapsedtime := A_TickCount - mostRecentActionTime
+		timingList.Push(elapsedtime) ; add timing to list
+		mostRecentActionTime := A_TickCount 
+		
+	}
 }
+
+
+
+
+
+
+; turns the recording into a text string line by line
+ConvertRecordingToText() {
+	
+	outputString := "" ; where we store the output
+	LineDelimiter := "`n" ; Use `r`n for Windows line endings
+	
+	for index, element in keystrokeList ; Enumeration is the recommended approach in most cases.
+	{
+		
+		clickType := keystrokeList[a_index]
+		xposRecording := mouseXList[a_index]
+		yposRecording := mouseYList[a_index]
+		timingRecording := timingList[a_index]
+		characterRecording := characterList[a_index]
+		characterRecordingModified := StrReplace(characterRecording, "~", "") ; get rid of the ~
+		
+		
+		; sleep, %timingRecording% ; (wait for correct amount of time) 
+		sleepString := "sleep, "
+		sleepString := sleepString . timingRecording
+		outputString := outputString . sleepString . LineDelimiter
+		
+		; MsgBox %sleepString% ; useful for debugging
+		
+		
+		; MouseMove, %xposRecording%, %yposRecording% ; always move the mouse
+		moveMouseString := "MouseMove, "
+		moveMouseString := moveMouseString . xposRecording . ", " . yposRecording
+		outputString := outputString . moveMouseString . LineDelimiter
+		
+		; sleep, 1 ; some programs need a bit of "hover" to register an interaction
+		sleepString := "sleep, 1"
+		outputString := outputString . sleepString . LineDelimiter
+		
+		if(clickType = "Mouse"){
+			
+			
+			if(characterRecordingModified == "LButton Up"){
+				; Click Up Left 
+				clickString := "Click Up Left"
+				outputString := outputString . clickString . LineDelimiter
+			}
+			
+			else if(characterRecordingModified == "LButton"){
+				; Click Down Left 
+				clickString := "Click Down Left"
+				outputString := outputString . clickString . LineDelimiter
+			}
+			
+			else if(characterRecordingModified == "Rbutton Up"){
+				; Click Up Right 
+				clickString := "Click Up Right"
+				outputString := outputString . clickString . LineDelimiter
+			}
+			
+			else if(characterRecordingModified == "Rbutton"){
+				; Click Down Right
+				clickString := "Click Down Right"
+				outputString := outputString . clickString . LineDelimiter
+			}
+			else{
+				; Click %characterRecordingModified%
+				clickString := "Click"
+				clickString := clickString . " " . characterRecordingModified
+				outputString := outputString . clickString . LineDelimiter
+			}
+			
+		}
+		
+		if(clickType = "Key"){
+			
+			if(StrLen(characterRecordingModified) > 1){
+				; Send, {%characterRecordingModified%}
+				sendString := "Send, {"
+				sendString := sendString . characterRecordingModified . "}"
+				outputString := outputString . sendString . LineDelimiter
+			}else{
+				; Send, %characterRecordingModified%
+				sendString := "Send, "
+				sendString := sendString . characterRecordingModified
+				outputString := outputString . sendString . LineDelimiter
+			}
+		}
+	}	
+	
+	return outputString
 }
+
+
+; this function creates a copy of this macro in AHK format in the home folder (the same folder where this script is)
+ExportMacro() {
+	
+	
+	EndLoop()
+	
+	; Get the path to the script's folder
+	ScriptDir := A_ScriptDir
+	
+	; Specify the file name
+	FileName := "exported_script.txt"
+	
+	; Combine the script's folder path with the file name
+	FilePath := ScriptDir "\" FileName
+	
+	; Delete the existing file if it exists
+	if FileExist(FilePath)
+	FileDelete, %FilePath%
+	
+	; Specify the new content
+	FileContent := ConvertRecordingToText()
+	
+	; Create and write to the text file
+	FileAppend, %FileContent%, %FilePath%
+}
+
