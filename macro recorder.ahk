@@ -173,6 +173,12 @@ LoopThroughList() {
 				else if(characterRecordingModified == "Rbutton"){
 					Click Down Right 
 				}
+				else if(characterRecordingModified == "MButton Up"){
+					Click Up Middle 
+				}
+				else if(characterRecordingModified == "MButton"){
+					Click Down Middle 
+				}
 				else{
 					Click %characterRecordingModified%
 				}
@@ -195,12 +201,14 @@ LoopThroughList() {
 }
 
 ; mouse recording
-~LButton::  
+~LButton::
 ~LButton Up::
-~RButton::  
+~RButton::
 ~RButton Up::
+~MButton::
+~MButton Up::
 ~WheelUp::
-~WheelDown:: 
+~WheelDown::
 RecordKeystroke("Mouse", A_ThisHotkey)
 Return
 
@@ -287,8 +295,7 @@ Return
 ~NumpadSub::
 ~NumpadEnter::
 ~XButton1:: ; even though this is a mouse key, you have to use Send to use it so im placing it here
-~XButton2:: 
-~MButton::    
+~XButton2::    
 RecordKeystroke("Key", A_ThisHotkey)
 Return
 
