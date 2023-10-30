@@ -29,7 +29,9 @@ global mostRecentActionTime
 ;**   F8 Start or Stop Playback (loop forever)  **
 ;**   F9 Add 1 Loop    (stackable)              **
 ;**   F10 Add 10 Loops (stackable)              **
-;**   F12 Export Script                         **
+;**                                             **
+;**   F6 Export Script Normal Playback Speed    **
+;**   F7 Export Script Fast Playback Speed      **
 ;**                                             **
 ;*************************************************
 
@@ -93,8 +95,12 @@ loopsRemaining += 10
 StartLoop()
 Return
 
-F12:: ; F12 to export
-ExportMacro()
+F6:: ; F6 to export normal speed
+ExportMacro(-1)
+Return
+
+F7:: ; F7 to export fast speed
+ExportMacro(200)
 Return
 
 
@@ -148,7 +154,7 @@ LoopThroughList() {
 			; MsgBox, % characterRecordingModified ; useful for debugging
 			
 			MouseMove, %xposRecording%, %yposRecording% ; always move the mouse
-			sleep, 1 ; some programs need a bit of "hover" to register an interaction
+			sleep, 30 ; some programs need a bit of "hover" to register an interaction
 			
 			if(clickType = "Mouse"){
 				
@@ -315,7 +321,7 @@ RecordKeystroke(Keystroke, Character) {
 
 
 ; turns the recording into a text string line by line
-ConvertRecordingToText() {
+ConvertRecordingToText(speed) {
 	
 	outputString := "" ; where we store the output
 	LineDelimiter := "`n" ; Use `r`n for Windows line endings
@@ -333,7 +339,12 @@ ConvertRecordingToText() {
 		
 		; sleep, %timingRecording% ; (wait for correct amount of time) 
 		sleepString := "sleep, "
-		sleepString := sleepString . timingRecording
+		if(speed < 0){
+			sleepString := sleepString . timingRecording
+		}
+		else{
+			sleepString := sleepString . speed
+		}
 		outputString := outputString . sleepString . LineDelimiter
 		
 		; MsgBox %sleepString% ; useful for debugging
@@ -345,7 +356,8 @@ ConvertRecordingToText() {
 		outputString := outputString . moveMouseString . LineDelimiter
 		
 		; sleep, 1 ; some programs need a bit of "hover" to register an interaction
-		sleepString := "sleep, 1"
+		
+		sleepString := "sleep, 30"
 		outputString := outputString . sleepString . LineDelimiter
 		
 		if(clickType = "Mouse"){
@@ -404,7 +416,7 @@ ConvertRecordingToText() {
 
 
 ; this function creates a copy of this macro in AHK format in the home folder (the same folder where this script is)
-ExportMacro() {
+ExportMacro(speed) {
 	
 	
 	EndLoop()
@@ -423,7 +435,7 @@ ExportMacro() {
 	FileDelete, %FilePath%
 	
 	; Specify the new content
-	FileContent := ConvertRecordingToText()
+	FileContent := ConvertRecordingToText(speed)
 	
 	; Create and write to the text file
 	FileAppend, %FileContent%, %FilePath%
