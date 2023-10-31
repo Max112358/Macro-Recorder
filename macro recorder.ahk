@@ -393,6 +393,16 @@ ConvertRecordingToText(speed) {
 				clickString := "Click Down Right"
 				outputString := outputString . clickString . LineDelimiter
 			}
+			else if(characterRecordingModified == "MButton Up"){
+				; Click Up Middle 
+				clickString := "Click Up Middle"
+				outputString := outputString . clickString . LineDelimiter
+			}
+			else if(characterRecordingModified == "MButton"){
+				; Click Down Middle 
+				clickString := "Click Down Middle"
+				outputString := outputString . clickString . LineDelimiter
+			}
 			else{
 				; Click %characterRecordingModified%
 				clickString := "Click"
