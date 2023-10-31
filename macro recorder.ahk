@@ -166,12 +166,12 @@ LoopThroughList() {
 					Click Down Left 
 				}
 				
-				else if(characterRecordingModified == "Rbutton Up"){
-					Click Up Right 
+				else if(characterRecordingModified == "RButton Up"){
+					Click Up Right
 				}
 				
-				else if(characterRecordingModified == "Rbutton"){
-					Click Down Right 
+				else if(characterRecordingModified == "RButton"){
+					Click Down Right
 				}
 				else if(characterRecordingModified == "MButton Up"){
 					Click Up Middle 
@@ -180,6 +180,7 @@ LoopThroughList() {
 					Click Down Middle 
 				}
 				else{
+					; MsgBox, %characterRecordingModified%
 					Click %characterRecordingModified%
 				}
 				
@@ -382,13 +383,13 @@ ConvertRecordingToText(speed) {
 				outputString := outputString . clickString . LineDelimiter
 			}
 			
-			else if(characterRecordingModified == "Rbutton Up"){
+			else if(characterRecordingModified == "RButton Up"){
 				; Click Up Right 
 				clickString := "Click Up Right"
 				outputString := outputString . clickString . LineDelimiter
 			}
 			
-			else if(characterRecordingModified == "Rbutton"){
+			else if(characterRecordingModified == "RButton"){
 				; Click Down Right
 				clickString := "Click Down Right"
 				outputString := outputString . clickString . LineDelimiter
